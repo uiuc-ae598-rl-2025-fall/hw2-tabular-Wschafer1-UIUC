@@ -13,7 +13,6 @@ from matplotlib.animation import FuncAnimation, PillowWriter
 import numpy as np
 import re
 from FrozenLakeMDP import *
-from MCcontrol import *
 
 ## Plot the Policy Map of an Agent ##
 def plotPolicy(pi, title, show=False):
@@ -169,6 +168,17 @@ def plotTrajectory(states, title, animate=False, fps=2):
 
 ## Plot the Evaluation Return Vs. Time Steps ##
 def plotEvalReturn(pi_sets, pi_names, dt, gamma=0.95, eval_episodes=50, map_name="4x4", is_slippery=True, max_steps=1000):
+
+    # helper function
+    def getReturns_all_visits(gamma, rewards, actions):
+        T = len(actions)
+        G_per_step = np.zeros(T, dtype=float)
+        G = 0.0
+        for t in reversed(range(T)):
+            G = rewards[t] + gamma * G
+            G_per_step[t] = G
+        return G_per_step
+
     fig = plt.figure()
 
     for alg_pis, name in zip(pi_sets, pi_names):
@@ -177,7 +187,7 @@ def plotEvalReturn(pi_sets, pi_names, dt, gamma=0.95, eval_episodes=50, map_name
             ep_returns = []
             for _ in range(eval_episodes):
                 states, actions, rewards, _ = simFrozenLakeMDP(pi=pi, map_name=map_name, is_slippery=is_slippery, max_steps=max_steps)
-                G = getFirstVisitReturns(gamma=gamma, rewards=rewards, states=states, actions=actions)
+                G = getReturns_all_visits(gamma=gamma, rewards=rewards, actions=actions)
                 ep_returns.append(float(np.nanmax(G)))
             y_vals.append(np.mean(ep_returns))
 

@@ -18,6 +18,7 @@ print('\n')
 ## User Inputs ##
 is_slippery = True
 num_episodes = 5000
+max_steps = 100
 gamma = 0.95
 epsilon = 0.1
 alpha = 0.1
@@ -34,7 +35,7 @@ if see_MC:
                                           gamma=gamma, 
                                           epsilon=epsilon,
                                           is_slippery=is_slippery, 
-                                          max_steps=1000,
+                                          max_steps=max_steps,
                                           num_evals=num_evals
                                          )
     risk_MC, risky_states_MC, hole_probs_MC = validatePi(pi_MC)
@@ -49,7 +50,7 @@ if see_Sarsa:
                               epsilon=epsilon,
                               alpha=alpha,
                               is_slippery=is_slippery, 
-                              max_steps=1000,
+                              max_steps=max_steps,
                               num_evals=num_evals
                              )
     risk_sarsa, risky_states_sarsa, hole_probs_sarsa = validatePi(pi_sarsa)
@@ -64,7 +65,7 @@ if see_QL:
                                epsilon=epsilon,
                                alpha=alpha,
                                is_slippery=is_slippery, 
-                               max_steps=1000,
+                               max_steps=max_steps,
                                num_evals=num_evals
                               )
     risk_QL, risky_states_QL, hole_probs_QL = validatePi(pi_QL)
