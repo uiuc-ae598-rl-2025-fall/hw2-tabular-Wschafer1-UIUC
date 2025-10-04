@@ -18,7 +18,7 @@ print('\n')
 ## User Inputs ##
 is_slippery = True
 num_episodes = 5000
-max_steps = 100
+max_steps = 1000
 gamma = 0.95
 epsilon = 0.1
 alpha = 0.1
