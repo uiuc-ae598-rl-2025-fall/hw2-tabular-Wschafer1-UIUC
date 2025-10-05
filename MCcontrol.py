@@ -114,6 +114,7 @@ def MCcontrol(num_episodes, gamma=0.95, epsilon=0.1, map_name="4x4", is_slippery
     dt = int(np.ceil(num_episodes / num_evals))
     eval_num = 0
     pi2eval = []
+    numSteps = 0
 
     # run the MDP and collect each episode's return
     episodeReturns = []
@@ -132,6 +133,8 @@ def MCcontrol(num_episodes, gamma=0.95, epsilon=0.1, map_name="4x4", is_slippery
         # compute the episode return
         Ge = getFirstVisitReturns(gamma=gamma, rewards=rewards, states=states, actions=actions)
         episodeReturns.append(Ge)
+        stepsTaken = len(actions)
+        numSteps += stepsTaken
     
         # compute Q=average(G) and replace all NaN values with Q_init's values
         Qnew = np.nanmean(np.stack(episodeReturns, axis=0), axis=0)
@@ -142,7 +145,8 @@ def MCcontrol(num_episodes, gamma=0.95, epsilon=0.1, map_name="4x4", is_slippery
 
         # update and/or collect the policy for post evaluation
         if (eval_num == dt) or (eval_num == 0):
-            pi2eval.append(np.argmax(Q, axis=1))
+            pi_collect = np.argmax(Q, axis=1)
+            pi2eval.append([numSteps, pi_collect])
             eval_num = 0
         eval_num += 1
 

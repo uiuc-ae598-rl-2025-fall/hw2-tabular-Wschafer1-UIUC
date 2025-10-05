@@ -113,6 +113,7 @@ def sarsa(num_episodes, gamma=0.95, epsilon=0.1, alpha=0.1, map_name="4x4", is_s
     dt = int(np.ceil(num_episodes / num_evals))
     eval_num = 0
     pi2eval = []
+    numSteps = 0
 
     # run the MDP
     for _ in range(num_episodes):
@@ -129,6 +130,7 @@ def sarsa(num_episodes, gamma=0.95, epsilon=0.1, alpha=0.1, map_name="4x4", is_s
 
             # choose a from pi derived from Q
             s_next, r, terminated, truncated, _ = env.step(a)
+            numSteps += 1
 
             # update Q
             a_next = getActionFromQ(Q, s_next, epsilon)
@@ -145,7 +147,8 @@ def sarsa(num_episodes, gamma=0.95, epsilon=0.1, alpha=0.1, map_name="4x4", is_s
 
         # update and/or collect the policy for post evaluation
         if (eval_num == dt) or (eval_num == 0):
-            pi2eval.append(np.argmax(Q, axis=1))
+            pi_collect = np.argmax(Q, axis=1)
+            pi2eval.append([numSteps, pi_collect])
             eval_num = 0
         eval_num += 1
     

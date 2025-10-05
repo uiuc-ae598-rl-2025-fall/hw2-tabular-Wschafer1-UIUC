@@ -16,8 +16,8 @@ from QLearning import *
 print('\n')
 
 ## User Inputs ##
-is_slippery = True
-num_episodes = 5000
+is_slippery = False
+num_episodes = 10000
 max_steps = 1000
 gamma = 0.95
 epsilon = 0.1
@@ -73,4 +73,4 @@ if see_QL:
     plotPolicy(pi_QL, title="Q-Learning Policy Map")
 
 if see_MC and see_Sarsa and see_QL:
-    plotEvalReturn([pi2eval_MC, pi2eval_sarsa, pi2eval_QL], ['Monte Carlo Control', 'Sarsa', 'Q-Learning'], dt, gamma=1, eval_episodes=10000, is_slippery=is_slippery)
+    plotEvalReturn([pi2eval_MC, pi2eval_sarsa, pi2eval_QL], ['Monte Carlo Control', 'Sarsa', 'Q-Learning'], gamma=1, eval_episodes=1000, is_slippery=is_slippery)

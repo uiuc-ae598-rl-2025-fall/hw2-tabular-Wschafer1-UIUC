@@ -167,31 +167,39 @@ def plotTrajectory(states, title, animate=False, fps=2):
     return fig, ax
 
 ## Plot the Evaluation Return Vs. Time Steps ##
-def plotEvalReturn(pi_sets, pi_names, dt, gamma=0.95, eval_episodes=50, map_name="4x4", is_slippery=True, max_steps=1000):
+def plotEvalReturn(pi_sets, pi_names, gamma=0.95, eval_episodes=50, map_name="4x4", is_slippery=True, max_steps=1000):
 
     # helper function
-    def getReturns_all_visits(gamma, rewards, actions):
-        T = len(actions)
-        G_per_step = np.zeros(T, dtype=float)
+    def episode_return(gamma, rewards):
         G = 0.0
-        for t in reversed(range(T)):
-            G = rewards[t] + gamma * G
-            G_per_step[t] = G
-        return G_per_step
+        for r in reversed(rewards):
+            G = r + gamma * G
+        return G
 
+    # plot
     fig = plt.figure()
 
     for alg_pis, name in zip(pi_sets, pi_names):
+        alg_pis_sorted = sorted(alg_pis, key=lambda x: x[0])
+
+        x_vals = []
         y_vals = []
-        for pi in alg_pis:
+
+        for steps, pi in alg_pis_sorted:
             ep_returns = []
             for _ in range(eval_episodes):
-                states, actions, rewards, _ = simFrozenLakeMDP(pi=pi, map_name=map_name, is_slippery=is_slippery, max_steps=max_steps)
-                G = getReturns_all_visits(gamma=gamma, rewards=rewards, actions=actions)
-                ep_returns.append(float(np.nanmax(G)))
+                _, _, rewards, _ = simFrozenLakeMDP(
+                    pi=pi,
+                    map_name=map_name,
+                    is_slippery=is_slippery,
+                    max_steps=max_steps
+                )
+                G0 = episode_return(gamma, rewards)
+                ep_returns.append(float(G0))
+
+            x_vals.append(int(steps))
             y_vals.append(np.mean(ep_returns))
 
-        x_vals = np.arange(len(alg_pis)) * int(dt)
         plt.plot(x_vals, y_vals, label=name, linewidth=2, marker='D', markersize=5)
 
     plt.xlabel("Time Steps")
@@ -202,7 +210,7 @@ def plotEvalReturn(pi_sets, pi_names, dt, gamma=0.95, eval_episodes=50, map_name
     plt.tight_layout()
     plt.xlim(left=0)
 
-    # make a safe filename from the title, e.g. "Eval_Return_vs_Steps.png"
+    # save figure
     picName = f"Evaluation Return vs Steps {pi_names}"
     safe_name = re.sub(r"[^\w\-]+", "_", picName).strip("_") + ".png"
     fig.savefig(safe_name, dpi=200)
